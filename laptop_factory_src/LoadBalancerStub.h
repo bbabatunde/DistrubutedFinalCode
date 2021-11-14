@@ -1,0 +1,14 @@
+//
+// Created by Egbantan Babatunde on 11/14/21.
+//
+
+#ifndef DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H
+#define DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H
+
+
+class LoadBalancerStub {
+
+};
+
+
+#endif //DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H

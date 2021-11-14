@@ -1,0 +1,14 @@
+//
+// Created by Egbantan Babatunde on 11/14/21.
+//
+
+#ifndef DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H
+#define DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H
+
+
+class LoadBalancerThread {
+
+};
+
+
+#endif //DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H

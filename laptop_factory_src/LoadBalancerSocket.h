@@ -1,0 +1,14 @@
+//
+// Created by Egbantan Babatunde on 11/14/21.
+//
+
+#ifndef DISTRUBUTEDFINALCODE_LOADBALANCERSOCKET_H
+#define DISTRUBUTEDFINALCODE_LOADBALANCERSOCKET_H
+
+
+class LoadBalancerSocket {
+
+};
+
+
+#endif //DISTRUBUTEDFINALCODE_LOADBALANCERSOCKET_H
