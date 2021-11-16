@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "Messages.h"
-#include "ServerSocket.h"
+#include "MultiPurposeServerSocket.h"
 #include "ServerStub.h"
 
 struct ExpertRequest {
@@ -48,8 +48,6 @@ private:
 	std::mutex erq_lock;
 	std::condition_variable erq_cv;
 
-	LaptopInfo CreateLaptop(CustomerRequest order, int engineer_id);
-	LaptopInfo PerformAdminstrative(CustomerRequest order, int engineer_id);
 
     std::mutex customer_record_lock;
     std::mutex map_record_lock;
@@ -68,15 +66,11 @@ private:
 
     bool is_switched = false;
     bool is_backup = false;
-public:
 
-	void EngineerThread(std::unique_ptr<ServerSocket> socket, int id);
-	void ProductionAdminThread(int id);
-
+    LaptopInfo CreateLaptop(CustomerRequest order, int engineer_id);
+    LaptopInfo PerformAdminstrative(CustomerRequest order, int engineer_id);
     CustomerRecord ReadRecord(CustomerRequest request);
-    void SetFactoryId(int id){
-        factory_id = id;
-    }
+
 
     int GetFactoryId();
 
@@ -86,15 +80,23 @@ public:
 
     bool Replicate(MapOp op);
 
-    void EngineerRole(ServerStub stub, int id);
+    void PrimaryServerRole(ServerStub stub, int id);
 
     void IdleFactoryAdminRole(ServerStub stub);
 
     void ConnectToBackups();
 
-    void SetPeerInfo(std::vector<PeerInfo>& info);
 
     int UpdateBackup(ServerStub *pStub);
+public:
+
+	void EngineerThread(std::unique_ptr<MultiPurposeServerSocket> socket, int id);
+	void ProductionAdminThread(int id);
+    void SetFactoryId(int id){
+        factory_id = id;
+    }
+    void SetPeerInfo(std::vector<PeerInfo>& info);
+
 };
 
 #endif // end of #ifndef __SERVERTHREAD_H__

@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-#include "ServerSocket.h"
+#include "MultiPurposeServerSocket.h"
 #include "ServerThread.h"
 
 int main(int argc, char *argv[]) {
@@ -15,9 +15,10 @@ int main(int argc, char *argv[]) {
 	int factory_id;
     int number_of_peer;
 
-	ServerSocket socket;
+	MultiPurposeServerSocket socket;
 	LaptopFactory factory;
-	std::unique_ptr<ServerSocket> new_socket;
+	std::unique_ptr<MultiPurposeServerSocket> new_socket;
+
 	std::vector<std::thread> thread_vector;
 	
 	if (argc < 3) {

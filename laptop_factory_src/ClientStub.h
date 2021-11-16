@@ -3,12 +3,12 @@
 
 #include <string>
 
-#include "ClientSocket.h"
+#include "MultiPurposeClientSocket.h"
 #include "Messages.h"
 
 class ClientStub {
 private:
-	ClientSocket socket;
+	MultiPurposeClientSocket socket;
 public:
 	ClientStub();
 	int Init(std::string ip, int port);

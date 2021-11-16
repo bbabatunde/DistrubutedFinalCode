@@ -6,8 +6,18 @@
 #define DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H
 
 
-class LoadBalancerStub {
+#include <memory>
+#include "MultiPurposeServerSocket.h"
+#include "MultiPurposeClientSocket.h"
 
+class LoadBalancerStub {
+private:
+    std::unique_ptr<MultiPurposeServerSocket> server_socket;
+    MultiPurposeClientSocket client_socket;
+public:
+    void Init(std::unique_ptr<MultiPurposeServerSocket> socket);
+
+    char *ReadClientBuffer();
 };
 
 

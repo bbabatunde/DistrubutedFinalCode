@@ -5,16 +5,16 @@
 #include <netinet/tcp.h>
 #include <sys/types.h>
 
-#include "ClientSocket.h"
+#include "MultiPurposeClientSocket.h"
 
-int ClientSocket::Init(std::string ip, int port) {
+int MultiPurposeClientSocket::Init(std::string ip, int port) {
 	if (is_initialized_) {
 		return 0;
 	}
 	struct sockaddr_in addr;
 	fd_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd_ < 0) {
-		perror("ERROR: failed to create a socket");
+		perror("ERROR: failed to create a server_socket");
 		return 0;
 	}
 

@@ -2,21 +2,27 @@
 // Created by Egbantan Babatunde on 11/14/21.
 //
 #include <iostream>
+#include "MultiPurposeServerSocket.h"
+#include "LoadBalancerThread.h"
+#include <thread>
 
+#include <vector>
+#include <string>
 int main(int argc, char *argv[]) {
 
-    int port = atoi(argv(1));
+    int port = atoi(argv[1]);;
     int number_of_servers = atoi(argv[2]);
     int cache_size = atoi(argv[3]);
 
 
-    LoadBalancerSocket socket;
-    LoadBalancerStub balancerStub;
-    std::vector<PeerInfo> primaryServers; //@TODO create new struct for primary servers info
+    MultiPurposeServerSocket socket;
+    LoadBalancerWorker balancer;
+    std::vector<ServerInfo> primaryServers; //@TODO create new struct for primary servers info
+    std::unique_ptr<MultiPurposeServerSocket> new_socket;
 
     int offset = 4;
 
-    for(int i = offset; i < number_of_servers; i++){
+    for(int i = 0; i < number_of_servers; i++){
 
         int peer_unique_id = atoi(argv[offset++]);
         std::string peer_ip = argv[offset++];
@@ -30,13 +36,14 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    balancer.ConnectServers(primaryServers);
+
     std::vector<std::thread> thread_vector;
 
     while ((new_socket = socket.Accept())) {
-
-        std::thread balancer_thread(&LoadBalancerStub::BalancerThread,
-                                    &balancerStub, std::move(new_socket));
-        thread_vector.push_back(std::move(balancer_thread));
+        std::thread worker_thread(&LoadBalancerWorker::BalancerThread,
+                                  &balancer, std::move(new_socket));
+        thread_vector.push_back(std::move(worker_thread));
     }
     return 0;
 }

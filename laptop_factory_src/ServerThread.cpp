@@ -35,26 +35,26 @@ PerformAdminstrative(CustomerRequest order, int engineer_id) {
 }
 
 void LaptopFactory::
-EngineerThread(std::unique_ptr<ServerSocket> socket, int id) {
+EngineerThread(std::unique_ptr<MultiPurposeServerSocket> socket, int id) {
 
 
 	ServerStub stub;
 
 	stub.Init(std::move(socket));
     HandShaking role = stub.RecieveIdentification();
-
     if(role.message == 0){
-        EngineerRole(std::move(stub), id);
+        PrimaryServerRole(std::move(stub), id);
     }else if(role.message == 1){
         is_backup = true;
         IdleFactoryAdminRole(std::move(stub));
     }else{
-        return;
+        std::cout<<"from loadbalancer"<<std::endl;
+
     }
 
 }
 
-void LaptopFactory::EngineerRole(ServerStub stub, int id){
+void LaptopFactory::PrimaryServerRole(ServerStub stub, int id){
     int engineer_id = id;
 
     LaptopInfo laptop;
@@ -82,6 +82,7 @@ void LaptopFactory::EngineerRole(ServerStub stub, int id){
                 }
 
                 laptop = CreateLaptop(request, engineer_id);
+                std::cout<<laptop.GetCustomerId()<<std::endl;
                 stub.ShipLaptop(laptop);
 
                 break;
