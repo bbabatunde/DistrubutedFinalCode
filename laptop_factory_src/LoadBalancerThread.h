@@ -29,7 +29,9 @@ public:
 
     void SendIdentification();
 
-    ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation);
+    ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation, int server);
+
+    int ConsistentHashingAlgorithm(int id);
 };
 
 

@@ -17,14 +17,14 @@ int main(int argc, char *argv[]) {
 
     MultiPurposeServerSocket socket;
     LoadBalancerWorker balancer;
-    std::vector<ServerInfo> primaryServers; //@TODO create new struct for primary servers info
+    std::vector<ServerInfo> primaryServers;
     std::unique_ptr<MultiPurposeServerSocket> new_socket;
 
     int offset = 4;
 
     for(int i = 0; i < number_of_servers; i++){
 
-        int peer_unique_id = atoi(argv[offset++]);
+        int peer_unique_id = atoi(argv[offset++]); //@TODO could internal and not from user
         std::string peer_ip = argv[offset++];
         int peer_port = atoi(argv[offset++]);
 
