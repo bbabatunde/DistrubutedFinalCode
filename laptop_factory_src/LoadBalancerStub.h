@@ -9,6 +9,7 @@
 #include <memory>
 #include "MultiPurposeServerSocket.h"
 #include "MultiPurposeClientSocket.h"
+#include "Messages.h"
 
 class LoadBalancerStub {
 private:
@@ -17,7 +18,9 @@ private:
 public:
     void Init(std::unique_ptr<MultiPurposeServerSocket> socket);
 
-    char *ReadClientBuffer();
+    CustomerRequest ReceiveCustomerRequest();
+
+    int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
 };
 
 

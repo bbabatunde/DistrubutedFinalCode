@@ -9,14 +9,25 @@ void LoadBalancerStub::Init(std::unique_ptr<MultiPurposeServerSocket> socket) {
 
 }
 
-char *LoadBalancerStub::ReadClientBuffer() {
+CustomerRequest LoadBalancerStub::ReceiveCustomerRequest() {
+    char buffer[32];
+    CustomerRequest request;
+    if (server_socket->Recv(buffer, request.Size(), 0)) {
+        request.Unmarshal(buffer);
+    }
+    return request;
+}
+
+int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp operation) {
     char buffer[32];
 
-    if(server_socket->Recv(buffer, 32,0)){
-        std::cout<<"buffer"<<std::endl;
-
-        return buffer;
-
+    if(operation == INFO){
+        info.info.Marshal(buffer);
+        return server_socket->Send(buffer, info.info.Size(), 0);
+    }else{
+        info.record.Marshal(buffer);
+        return server_socket->Send(buffer, info.record.Size(), 0);
     }
-    return nullptr;
+
+
 }

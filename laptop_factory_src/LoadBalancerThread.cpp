@@ -13,16 +13,35 @@ LoadBalancerWorker::LoadBalancerWorker() {
 void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket) {
     LoadBalancerStub stub;
     stub.Init(std::move(socket));
+    int request_type;
+    CustomerRecord record;
 
-
-    std::cout<<"connections to client"<<std::endl;
     while (true) {
-        char* request = stub.ReadClientBuffer();
-        if (!request) {
-            continue;
+        CustomerRequest request = stub.ReceiveCustomerRequest();
+        if (!request.IsValid()) {
+            break;
         }
-        std::cout<<request<<std::endl;
-        ForwardCustomerRequest(request);
+        request_type = request.GetRequestType();
+        LaptopInfo info;
+        CustomerRecord record;
+        ServerClientInterface inter;
+        switch (request_type) {
+
+            case 1:
+                info = SendToServer(request, INFO);
+                inter.info = info;
+                stub.Ship(inter, INFO);
+                break;
+
+            case 2:
+                record = SendToServer(request, RECORD);
+                inter.record = record;
+                stub.Ship(inter, RECORD);
+                break;
+            default:
+                std::cout << "Undefined laptop type: "
+                          << request_type << std::endl;
+        }
     }
 }
 
@@ -35,11 +54,6 @@ void LoadBalancerWorker::ConnectServers(std::vector<ServerInfo> vector1) {
     }
 }
 
-void LoadBalancerWorker::ForwardCustomerRequest(char *request) {
-    ServersStubsMap[0]->Send(request, 100, 0);
-
-}
-
 void LoadBalancerWorker::SendIdentification() {
     char buffer[32];
     HandShaking id(0, 0);
@@ -47,6 +61,36 @@ void LoadBalancerWorker::SendIdentification() {
 
     id.Marshal(buffer);
     ServersStubsMap[0]->Send(buffer, size, 0);
+}
+
+ServerClientInterface LoadBalancerWorker::SendToServer(CustomerRequest request, ServerClientInterfaceOp operation) {
+    ServerClientInterface result;
+    char buffer[32];
+    int size;
+    request.Marshal(buffer);
+    size = request.Size();
+    if (ServersStubsMap[0]->Send(buffer, size, 0)) {
+        if(operation == INFO){
+            LaptopInfo info;
+            size = info.Size();
+            if (ServersStubsMap[0]->Recv(buffer, size, 0)) {
+                info.Unmarshal(buffer);
+                result.info = info;
+
+            }
+        }else if(operation == RECORD){
+                CustomerRecord record;
+                size = record.Size();
+                if (ServersStubsMap[0]->Recv(buffer, size, 0)) {
+                    record.Unmarshal(buffer);
+                    result.record = record;
+
+                }
+        }
+
+    }
+
+    return result;
 }
 
 ServerInfo::ServerInfo(int id, int port, std::string ip) {

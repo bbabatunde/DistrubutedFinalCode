@@ -154,6 +154,15 @@ void LaptopInfo::Print() {
 	std::cout << "expid " << admin_id << std::endl;
 }
 
+void LaptopInfo::operator=(const ServerClientInterface &in) {
+	customer_id = in.info.customer_id;
+	order_number = in.info.order_number;
+	request_type = in.info.request_type;
+	engineer_id = in.info.engineer_id;
+	admin_id = in.info.admin_id;
+
+}
+
 CustomerRecord::CustomerRecord() {
     customer_id = -1;
     last_order = -1;
@@ -191,6 +200,12 @@ void CustomerRecord::Unmarshal(char *buffer) {
 CustomerRecord::CustomerRecord(int id, int order_no) {
     customer_id = id;
     last_order = order_no;
+}
+
+void CustomerRecord::operator=(const ServerClientInterface &info) {
+	customer_id = info.record.customer_id;
+	last_order = info.record.last_order;
+
 }
 
 
@@ -303,4 +318,8 @@ void ReplicationRequest::Unmarshal(char *buffer) {
 	op.opcode = ntohl(net_opcode);
 	op.arg1 =  ntohl(net_arg1);
 	op.arg2 =  ntohl(net_arg2);
+}
+
+void ServerClientInterface::operator=(LaptopInfo in) {
+	info = in;
 }
