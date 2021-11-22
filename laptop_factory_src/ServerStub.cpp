@@ -3,14 +3,14 @@
 
 ServerStub::ServerStub() {}
 
-void ServerStub::Init(std::unique_ptr<ServerSocket> socket) {
-	this->socket = std::move(socket);
+void ServerStub::Init(std::unique_ptr<MultiPurposeServerSocket> socket) {
+	this->server_socket = std::move(socket);
 }
 
 CustomerRequest ServerStub::ReceiveCustomerRequest() {
 	char buffer[32];
 	CustomerRequest request;
-	if (socket->Recv(buffer, request.Size(), 0)) {
+	if (server_socket->Recv(buffer, request.Size(), 0)) {
 		request.Unmarshal(buffer);
 	}
 	return request;
@@ -19,19 +19,19 @@ CustomerRequest ServerStub::ReceiveCustomerRequest() {
 int ServerStub::ShipLaptop(LaptopInfo info) {
 	char buffer[32];
 	info.Marshal(buffer);
-	return socket->Send(buffer, info.Size(), 0);
+	return server_socket->Send(buffer, info.Size(), 0);
 }
 
 int ServerStub::ReturnRecord(CustomerRecord info) {
     char buffer[32];
     info.Marshal(buffer);
-    return socket->Send(buffer, info.Size(), 0);
+    return server_socket->Send(buffer, info.Size(), 0);
 }
 
 HandShaking ServerStub::RecieveIdentification() {
     char buffer[24];
     HandShaking id;
-    if (socket->Recv(buffer, id.Size(), 0)) {
+    if (server_socket->Recv(buffer, id.Size(), 0)) {
         id.Unmarshal(buffer);
     }
     return id;
@@ -43,7 +43,7 @@ ReplicationRequest ServerStub::ReceiveReplicationRequest() {
     ReplicationRequest request;
     int size = request.Size();
 
-    if(socket->Recv(buffer, size, 0)){
+    if(server_socket->Recv(buffer, size, 0)){
         request.Unmarshal(buffer);
     }
     return request;
@@ -55,12 +55,12 @@ void ServerStub::SendReplicationResponse() {
     int size = sizeof(response);
 
     memcpy(buffer, &response, sizeof(response));
-    socket->Send(buffer, size, 0);
+    server_socket->Send(buffer, size, 0);
 }
 
 int ServerStub::InitToBackup(std::string ip, int port) {
 
-    int result = socket2.InitToBackup(ip, port);
+    int result = client_socket.Init(ip, port);
 
     if(result){
         HandShaking id(1, -1);
@@ -74,7 +74,7 @@ int ServerStub::SendIdentification(HandShaking id) {
     int size = id.Size();
 
     id.Marshal(buffer);
-    if(socket2.Send(buffer, size, 0)){
+    if(client_socket.Send(buffer, size, 0)){
         return  1;
     }else{
         return 0;
@@ -88,10 +88,10 @@ int ServerStub::SendReplicationRequest(ReplicationRequest request) {
     request.Marshal(buffer);
 
     int response = 0;
-    if(socket2.Send(buffer, size, 0)){
+    if(client_socket.Send(buffer, size, 0)){
 
         size = sizeof(response);
-        if(socket2.Recv(buffer, size, 0)){
+        if(client_socket.Recv(buffer, size, 0)){
             memcpy(&response, buffer, sizeof(response));
         }else{
             return -1;

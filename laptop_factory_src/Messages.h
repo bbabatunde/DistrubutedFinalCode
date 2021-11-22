@@ -3,6 +3,32 @@
 
 #include <string>
 
+
+enum ServerClientInterfaceOp{
+    INFO = 0,
+    RECORD = 1
+};
+struct ServerInfo{
+
+
+    int unique_id;
+    int port_no;
+    std::string peer_ip;
+    ServerInfo(){
+        unique_id = -1;
+        port_no = -1;
+        peer_ip = nullptr;
+    };
+    ServerInfo(int id, int port, std::string ip);
+    ServerInfo& operator = (const ServerInfo &info) {
+        unique_id = info.unique_id;
+        port_no = info.port_no;
+        peer_ip = info.peer_ip;
+
+        return *this;
+    }
+};
+
 class CustomerRequest {
 private:
 	int customer_id;
@@ -31,23 +57,7 @@ public:
 	void Print();
 };
 
-class CustomerRecord{
-public:
-    int customer_id = -5;
-    int last_order = -5;
 
-    CustomerRecord();
-    CustomerRecord(int id, int order_no);
-    void operator = (const CustomerRecord &info) {
-        customer_id = info.customer_id;
-        last_order = info.last_order;
-
-    }
-    void Marshal(char *buffer);
-    void Unmarshal(char *buffer);
-    int Size();
-
-};
 
 class HandShaking{
 public:
@@ -66,6 +76,31 @@ public:
     void Marshal(char *buffer);
     void Unmarshal(char *buffer);
     int Size();
+};
+
+
+
+
+union ServerClientInterface;
+
+class CustomerRecord{
+public:
+    int customer_id = -5;
+    int last_order = -5;
+
+    CustomerRecord();
+    CustomerRecord(int id, int order_no);
+    void operator = (const CustomerRecord &info) {
+        customer_id = info.customer_id;
+        last_order = info.last_order;
+
+    }
+    void Marshal(char *buffer);
+    void Unmarshal(char *buffer);
+    int Size();
+
+    void operator = (const ServerClientInterface &info);
+
 };
 
 class LaptopInfo {
@@ -104,13 +139,28 @@ public:
 	bool IsValid();
 
 	void Print();
+    void operator = (const ServerClientInterface& in);
 };
+
+union ServerClientInterface{
+    ServerClientInterface(){
+
+    }
+    LaptopInfo info;
+    CustomerRecord record;
+
+    void operator=(LaptopInfo info);
+
+};
+
 
 struct MapOp{
     int opcode;
     int arg1;
     int arg2;
 };
+
+
 
 class ReplicationRequest{
 

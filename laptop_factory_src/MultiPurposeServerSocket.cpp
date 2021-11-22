@@ -7,15 +7,15 @@
 #include <netinet/tcp.h>
 #include <sys/types.h>
 
-#include "ServerSocket.h"
+#include "MultiPurposeServerSocket.h"
 
-ServerSocket::ServerSocket(int fd, bool nagle_on) {
+MultiPurposeServerSocket::MultiPurposeServerSocket(int fd, bool nagle_on) {
 	fd_ = fd;
 	is_initialized_ = true;
 	NagleOn(nagle_on);
 }
 
-bool ServerSocket::Init(int port) {
+bool MultiPurposeServerSocket::Init(int port) {
 	if (is_initialized_) {
 		return true;
 	}
@@ -23,7 +23,7 @@ bool ServerSocket::Init(int port) {
 	struct sockaddr_in addr;
 	fd_ = socket(AF_INET, SOCK_STREAM, 0);
 	if (fd_ < 0) {
-		perror("ERROR: failed to create a socket");
+		perror("ERROR: failed to create a server_socket");
 		return false;
 	}
 
@@ -43,7 +43,7 @@ bool ServerSocket::Init(int port) {
 	return true;
 }
 
-std::unique_ptr<ServerSocket> ServerSocket::Accept() {
+std::unique_ptr<MultiPurposeServerSocket> MultiPurposeServerSocket::Accept() {
 	int accepted_fd;
 	struct sockaddr_in addr;
 	unsigned int addr_size = sizeof(addr);
@@ -53,27 +53,6 @@ std::unique_ptr<ServerSocket> ServerSocket::Accept() {
 		return nullptr;
 	}
 
-	return std::unique_ptr<ServerSocket>(new ServerSocket(accepted_fd, IsNagleOn()));
+	return std::unique_ptr<MultiPurposeServerSocket>(new MultiPurposeServerSocket(accepted_fd, IsNagleOn()));
 }
 
-bool ServerSocket::InitToBackup(std::string ip, int port) {
-    if (is_initialized_) {
-        return 0;
-    }
-    struct sockaddr_in addr;
-    fd_ = socket(AF_INET, SOCK_STREAM, 0);
-    if (fd_ < 0) {
-        return 0;
-    }
-
-    memset(&addr, '\0', sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(ip.c_str());
-    addr.sin_port = htons(port);
-
-    if ((connect(fd_, (struct sockaddr *) &addr, sizeof(addr))) < 0) {
-        return 0;
-    }
-    is_initialized_ = true;
-    return 1;
-}

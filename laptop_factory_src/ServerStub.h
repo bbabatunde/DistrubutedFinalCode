@@ -3,16 +3,18 @@
 
 #include <memory>
 
-#include "ServerSocket.h"
+#include "MultiPurposeServerSocket.h"
+#include "MultiPurposeClientSocket.h"
+
 #include "Messages.h"
 
 class ServerStub {
 private:
-	std::unique_ptr<ServerSocket> socket;
-    ServerSocket socket2;
+	std::unique_ptr<MultiPurposeServerSocket> server_socket;
+    MultiPurposeClientSocket client_socket;
 public:
 	ServerStub();
-	void Init(std::unique_ptr<ServerSocket> socket);
+	void Init(std::unique_ptr<MultiPurposeServerSocket> socket);
 	CustomerRequest ReceiveCustomerRequest();
 	int ShipLaptop(LaptopInfo info);
     int ReturnRecord(CustomerRecord info);

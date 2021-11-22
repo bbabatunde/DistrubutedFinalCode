@@ -35,42 +35,43 @@ PerformAdminstrative(CustomerRequest order, int engineer_id) {
 }
 
 void LaptopFactory::
-EngineerThread(std::unique_ptr<ServerSocket> socket, int id) {
+EngineerThread(std::unique_ptr<MultiPurposeServerSocket> socket, int id) {
 
 
 	ServerStub stub;
 
 	stub.Init(std::move(socket));
     HandShaking role = stub.RecieveIdentification();
-
     if(role.message == 0){
-        EngineerRole(std::move(stub), id);
+        PrimaryServerRole(std::move(stub), id);
     }else if(role.message == 1){
         is_backup = true;
         IdleFactoryAdminRole(std::move(stub));
     }else{
-        return;
+        std::cout<<"Error: invalid role"<<std::endl;
+
     }
 
 }
 
-void LaptopFactory::EngineerRole(ServerStub stub, int id){
+void LaptopFactory::PrimaryServerRole(ServerStub stub, int id){
     int engineer_id = id;
 
     LaptopInfo laptop;
     CustomerRecord record;
     CustomerRequest request;
     int request_type;
-
     while (true) {
         request = stub.ReceiveCustomerRequest();
         if (!request.IsValid()) {
             break;
         }
         request_type = request.GetRequestType();
+        using namespace  std;
         switch (request_type) {
 
             case 1:
+
                 //become leader
                 if(GetPrimaryId() != GetFactoryId()){
                     SetPrimaryId(GetFactoryId());
@@ -199,6 +200,7 @@ bool LaptopFactory::Replicate(MapOp op) {
            }
 
        }
+
     maplock.unlock();
 
     maplock.lock();
@@ -212,8 +214,9 @@ bool LaptopFactory::Replicate(MapOp op) {
 
 
     bool result = true;
+
     for(auto & peer_stub : peer_stubs){
-            if(peer_stub) {
+        if(peer_stub) {
                 ReplicationRequest request(GetFactoryId(),committed_index,last_index, op);
 
                 int response = peer_stub->SendReplicationRequest(request);
@@ -261,6 +264,7 @@ void LaptopFactory::ConnectToBackups() {
 
 
     }
+
 }
 
 void LaptopFactory::SetPeerInfo(std::vector<PeerInfo>& info) {

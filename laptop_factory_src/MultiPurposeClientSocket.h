@@ -6,10 +6,10 @@
 #include "Socket.h"
 
 
-class ClientSocket: public Socket {
+class MultiPurposeClientSocket: public Socket {
 public:
-	ClientSocket() {}
-	~ClientSocket() {}
+	MultiPurposeClientSocket() {}
+	~MultiPurposeClientSocket() {}
 
 	int Init(std::string ip, int port);
 };
