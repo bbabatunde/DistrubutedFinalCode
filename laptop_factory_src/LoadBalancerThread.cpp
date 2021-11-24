@@ -38,18 +38,34 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
                 info = SendToServer(request, INFO, hashed_server);
                 inter.info = info;
                 stub.Ship(inter, INFO);
+
+                //invalidation after successful write
+                if(cache.find(customer_id) != cache.end()){
+                    cache[customer_id] = -1;
+                }
                 break;
 
             case 2:
                 customer_id = request.GetCustomerId();
                 hashed_server = ConsistentHashingAlgorithm(customer_id);
-                //@TODO caching baba
-                record = SendToServer(request, RECORD, hashed_server);
+
+                //use cache
+                if(cache.find(customer_id) != cache.end() && cache[customer_id] != -1){
+                    record = CustomerRecord(customer_id, cache[customer_id]);
+
+                }else{ // go to server
+                    record = SendToServer(request, RECORD, hashed_server);
+                }
+
 
                 inter.record = record;
                 stub.Ship(inter, RECORD);
+                cache[record.customer_id] = record.last_order;
                 break;
+
             //@TODO read all cache content baba from client(5)
+            case 5:
+                stub.ShipCacheToClient(cache);
             default:
                 std::cout << "Undefined laptop type: "
                           << request_type << std::endl;

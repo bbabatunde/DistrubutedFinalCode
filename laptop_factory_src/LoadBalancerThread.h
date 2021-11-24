@@ -21,6 +21,9 @@ private:
 
     std::map<int, MultiPurposeClientSocket*> ServersStubsMap;
 
+    //@TODO create a wrapper class for map that use FIFO(easiest)/LIFO/LRU(most complicated) to control
+    //size
+    std::map<int, int> cache;
 public:
     LoadBalancerWorker();
     void BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket);

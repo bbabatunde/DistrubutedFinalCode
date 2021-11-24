@@ -31,3 +31,8 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
 
 
 }
+
+void LoadBalancerStub::ShipCacheToClient(std::__1::map<int, int> map1) {
+    char buffer[map1.size()];
+
+}

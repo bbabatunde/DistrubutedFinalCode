@@ -7,6 +7,7 @@
 
 
 #include <memory>
+#include <map>
 #include "MultiPurposeServerSocket.h"
 #include "MultiPurposeClientSocket.h"
 #include "Messages.h"
@@ -21,6 +22,8 @@ public:
     CustomerRequest ReceiveCustomerRequest();
 
     int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
+
+    void ShipCacheToClient(std::__1::map<int, int> map1);
 };
 
 
