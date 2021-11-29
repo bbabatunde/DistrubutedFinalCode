@@ -5,12 +5,13 @@
 #ifndef DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H
 #define DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H
 
-
+#include "LoadBalancerStub.h"
 #include "MultiPurposeServerSocket.h"
 #include "Messages.h"
 #include "MultiPurposeClientSocket.h"
 #include <map>
 #include <vector>
+
 
 
 
@@ -23,7 +24,7 @@ private:
 
     //@TODO create a wrapper class for map that use FIFO(easiest)/LIFO/LRU(most complicated) to control
     //size
-    std::map<int, int> cache;
+    MaxLRUCache::Cache cache;
 public:
     LoadBalancerWorker();
     void BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket);
@@ -35,6 +36,8 @@ public:
     ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation, int server);
 
     int ConsistentHashingAlgorithm(int id);
+
+    void SetCacheSize(int size);
 };
 
 

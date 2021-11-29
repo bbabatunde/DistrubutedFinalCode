@@ -2,8 +2,8 @@
 // Created by Egbantan Babatunde on 11/14/21.
 //
 
+
 #include "LoadBalancerThread.h"
-#include "LoadBalancerStub.h"
 #include <iostream>
 
 LoadBalancerWorker::LoadBalancerWorker() {
@@ -25,11 +25,11 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
         LaptopInfo info;
         CustomerRecord record;
         ServerClientInterface inter;
+        CustomerRecord cacheToSend;
         int hashed_server;
         int customer_id = 0;
-
+        std::string cache_string;
         switch (request_type) {
-
             case 1:
                 customer_id = request.GetCustomerId();
                 hashed_server = ConsistentHashingAlgorithm(customer_id);
@@ -38,40 +38,46 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
                 info = SendToServer(request, INFO, hashed_server);
                 inter.info = info;
                 stub.Ship(inter, INFO);
-
-                //invalidation after successful write
-                if(cache.find(customer_id) != cache.end()){
-                    cache[customer_id] = -1;
-                }
+                
+                // std::cout << "size of cache is: " << cache.getMaxSize() << std::endl;
+                // invalidating after successful write
+                cache.removeRecord(customer_id); // removeRecord is returning bool
                 break;
 
+            
             case 2:
                 customer_id = request.GetCustomerId();
                 hashed_server = ConsistentHashingAlgorithm(customer_id);
 
-                //use cache
-                if(cache.find(customer_id) != cache.end() && cache[customer_id] != -1){
-                    record = CustomerRecord(customer_id, cache[customer_id]);
-
-                }else{ // go to server
+                // first check cache and we have a hit nice then return it
+                if(cache.hasKey(customer_id)) {
+                    record = CustomerRecord(customer_id, cache.getRecord(customer_id));
+                } else {
                     record = SendToServer(request, RECORD, hashed_server);
                 }
-
-
+                
                 inter.record = record;
                 stub.Ship(inter, RECORD);
-                cache[record.customer_id] = record.last_order;
+                // add it to the cache
+                // add only valid orders since we add it to cache after first read some -1 were in the list and I tried to prevent it with an if
+                if(record.last_order != -1){
+                    cache.addRecord(customer_id, record.last_order);
+                }
                 break;
-
-            //@TODO read all cache content baba from client(5)
             case 5:
-                stub.ShipCacheToClient(cache);
+                cache_string = ""; 
+                cache_string = cache.toString();
+                if (!cache.empty()){
+                    stub.ShipCacheToClient(cache_string);
+                } 
+                else {
+                    stub.ShipCacheToClient("Cache is empty");
+                } 
+                
+                break;
             default:
                 std::cout << "Undefined laptop type: "
                           << request_type << std::endl;
-
-            //@TODO merge partitions
-            //@TODO add partitions
         }
     }
 }
@@ -133,4 +139,8 @@ ServerInfo::ServerInfo(int id, int port, std::string ip) {
     unique_id = id;
     port_no = port;
     peer_ip = ip;
+}
+
+void LoadBalancerWorker::SetCacheSize(int size) {
+    cache.setCacheSize(size);
 }

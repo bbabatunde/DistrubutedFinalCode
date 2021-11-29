@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     LoadBalancerWorker balancer;
     std::vector<ServerInfo> primaryServers;
     std::unique_ptr<MultiPurposeServerSocket> new_socket;
-
+    balancer.SetCacheSize(cache_size);
     int offset = 4;
 
     for(int i = 0; i < number_of_servers; i++){

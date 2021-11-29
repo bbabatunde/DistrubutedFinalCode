@@ -29,10 +29,9 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
         return server_socket->Send(buffer, info.record.Size(), 0);
     }
 
-
 }
 
-void LoadBalancerStub::ShipCacheToClient(std::__1::map<int, int> map1) {
-    char buffer[map1.size()];
+int LoadBalancerStub::ShipCacheToClient(std::string data) {
 
+    return server_socket->SendString(data);
 }

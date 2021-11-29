@@ -98,7 +98,9 @@ public:
     void Marshal(char *buffer);
     void Unmarshal(char *buffer);
     int Size();
-
+    void SetRecord(int id, int order);
+    int GetLastOrder();
+    int GetCustomerId();
     void operator = (const ServerClientInterface &info);
 
 };

@@ -71,6 +71,23 @@ int Socket::Recv(char *buffer, int size, int flags) {
 	}
 	return 1;
 }
+int Socket::SendString(std::string data, int flags){
+	return send(fd_, data.c_str(), data.length(), flags);
+}
+std::string Socket::ReceiveString(int size)
+{
+	char buffer[size];
+	memset(&buffer[0], 0, sizeof(buffer));
+
+	std::string reply;
+	if( recv(fd_ , buffer , size, 0) < 0){
+    	std::cout << "receive failed!" << std::endl;
+			return nullptr;
+	}
+	buffer[size-1]='\0';
+	reply = buffer;
+	return reply;
+}
 
 int Socket::NagleOn(bool on_off) {
 	nagle_ = (on_off ? NAGLE_ON : NAGLE_OFF);
