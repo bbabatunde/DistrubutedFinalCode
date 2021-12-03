@@ -24,14 +24,19 @@ CLNT_HDRS := $(wildcard Client*.h)
 CLNT_SRCS := $(wildcard Client*.cpp)
 CLNT_OBJS := $(CLNT_SRCS:.cpp=.o)
 
-# $(wildcard Client*.h) finds all file names with patterns ("LoadBalancer" + random string + ".h")
+# $(wildcard LoadBalancer*.h) finds all file names with patterns ("LoadBalancer" + random string + ".h")
 LDB_HDRS := $(wildcard LoadBalancer*.h)
 LDB_SRCS := $(wildcard LoadBalancer*.cpp)
 LDB_OBJS := $(LDB_SRCS:.cpp=.o)
 
+# $(wildcard SysAdminClient*.h) finds all file names with patterns ("SysAdminClient" + random string + ".h")
+SYSC_HDRS := $(wildcard SysAdminClient*.h)
+SYSC_SRCS := $(wildcard SysAdminClient*.cpp)
+SYSC_OBJS := $(SYSC_SRCS:.cpp=.o)
+
 # $(filter-out X Y Z, A) removes X Y and Z from A if X Y Z are found in A
-CMN_HDRS := $(filter-out $(LDB_HDRS) $(SVR_HDRS) $(CLNT_HDRS), $(HDRS))
-CMN_SRCS := $(filter-out $(LDB_SRCS) $(SVR_SRCS) $(CLNT_SRCS), $(SRCS))
+CMN_HDRS := $(filter-out $(SYSC_HDRS) $(LDB_HDRS) $(SVR_HDRS) $(CLNT_HDRS), $(HDRS))
+CMN_SRCS := $(filter-out $(SYSC_SRCS) $(LDB_SRCS) $(SVR_SRCS) $(CLNT_SRCS), $(SRCS))
 CMN_OBJS := $(CMN_SRCS:.cpp=.o)
 
 
@@ -43,7 +48,7 @@ CFLAGS := -Wall -std=c++11
 LFLAGS := -pthread 
 
 # we are building two target binaries: server and client
-TARGET := server client loadbalancer
+TARGET := server client loadbalancer sysclient
 
 #-------------------------------------------------------------------------------
 # 2. What to build and how to build them
@@ -116,6 +121,13 @@ loadbalancer: $(LDB_OBJS) $(CMN_OBJS)
 
 $(LDB_OBJS):  $(LDB_SRCS) $(LDB_HDRS)
 	$(CXX) $(CFLAGS) $(DFLAGS) -c $(LDB_SRCS)
+
+# sys admin
+sysclient: $(SYSC_OBJS) $(CMN_OBJS)
+	$(CXX) $(LFLAGS) -o $@ $^
+
+$(SYSC_OBJS): $(SYSC_SRCS) $(SYSC_HDRS)
+	$(CXX) $(CFLAGS) $(DFLAGS) -c $(SYSC_SRCS)
 
 # This rule compiles the common source code into object files.
 $(CMN_OBJS): $(CMN_SRCS) $(CMN_HDRS)

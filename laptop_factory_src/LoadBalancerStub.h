@@ -21,6 +21,10 @@ public:
     CustomerRequest ReceiveCustomerRequest();
 
     int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
+
+    HandShaking RecieveIdentification();
+
+    AdminRequest ReceiveAdminRequest();
 };
 
 

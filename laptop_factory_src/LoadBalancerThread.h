@@ -6,32 +6,39 @@
 #define DISTRUBUTEDFINALCODE_LOADBALANCERTHREAD_H
 
 
-#include "MultiPurposeServerSocket.h"
-#include "Messages.h"
-#include "MultiPurposeClientSocket.h"
+
+#include "LoadBalancerRing.h"
+#include "LoadBalancerStub.h"
 #include <map>
 #include <vector>
-
-
-
-
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <iterator>
 
 class LoadBalancerWorker {
 private:
 
     std::map<int, MultiPurposeClientSocket*> ServersStubsMap;
+    LoadBalancerRing ring;
+    LoadBalancerRing old_ring;
 
 public:
     LoadBalancerWorker();
     void BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket);
 
-    void ConnectServers(std::vector<ServerInfo> vector1);
+    void InitRing(std::vector<ServerInfo> vector1,  LoadBalancerRing ring);
 
-    void SendIdentification();
+    void SendIdentification(int id);
 
     ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation, int server);
 
-    int ConsistentHashingAlgorithm(int id);
+
+    void CustomerThread(LoadBalancerStub &&stub);
+
+    void SysAdminThread(LoadBalancerStub &&stub);
+
+    void Migrate(LoadBalancerRing ring, LoadBalancerRing ring1);
 };
 
 

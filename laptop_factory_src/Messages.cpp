@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <utility>
 
 #include <arpa/inet.h>
 #include "Messages.h"
@@ -242,10 +243,6 @@ int HandShaking::Size() {
 	return sizeof(message) + sizeof(response);
 }
 
-bool ReplicationRequest::IsValid() {
-	return true;
-}
-
 ReplicationRequest::ReplicationRequest() {
 	factory_id = -1;
 	committed_index = -1;
@@ -322,4 +319,90 @@ void ReplicationRequest::Unmarshal(char *buffer) {
 
 void ServerClientInterface::operator=(LaptopInfo in) {
 	info = in;
+}
+
+int AdminRequest::GetRequestType() {
+    return request_type;
+}
+
+int AdminRequest::Size() {
+    return sizeof(request_type) + sizeof(s_info);
+}
+
+void AdminRequest::Unmarshal(char *buffer) {
+
+    int net_request_type;
+    int net_server_info_port;
+    std::string net_server_info_address;
+    int net_server_info_id;
+
+    int offset = 0;
+
+
+    memcpy(&net_request_type, buffer + offset, sizeof(net_request_type));
+    offset += sizeof(net_request_type);
+    memcpy(&net_server_info_port, buffer + offset, sizeof(net_server_info_port));
+    offset += sizeof(net_server_info_port);
+    //memcpy(&net_server_info_address, buffer + offset, net_server_info_address.size());
+    //offset += net_server_info_address.size();
+    //memcpy(&net_server_info_id, buffer + offset, sizeof(net_server_info_id));
+
+
+    request_type = ntohl(net_request_type);
+    s_info.port_no = ntohl(net_server_info_port);
+    s_info.peer_ip = net_server_info_address;
+    s_info.unique_id = ntohl(net_server_info_id);
+
+}
+
+void AdminRequest::Marshal(char *buffer) {
+    return;
+    int net_request_type = htonl(request_type);
+    int net_server_info_port = htonl(s_info.port_no);
+    std::string net_server_info_address = s_info.peer_ip;
+    int net_server_info_id = htonl(s_info.unique_id);
+
+
+    int offset = 0;
+
+
+    memcpy(buffer + offset, &net_request_type, sizeof(net_request_type));
+    offset += sizeof(net_request_type);
+    memcpy(buffer + offset, &net_server_info_port, sizeof(net_server_info_port));
+    offset += sizeof(net_server_info_port);
+    //memcpy(buffer + offset, &net_server_info_address, net_server_info_address.size());
+    //offset += net_server_info_address.size();
+    memcpy(buffer + offset, &net_server_info_id, sizeof(net_server_info_id));
+
+}
+
+void AdminRequest::SetRequest(int i, const ServerInfo& in_info) {
+    request_type = i;
+    s_info = in_info;
+}
+
+ServerInfo AdminRequest::GetServerInfo() {
+    return s_info;
+}
+
+AdminRequest::AdminRequest() {
+
+    request_type = -1;
+    s_info = ServerInfo();
+
+}
+
+
+ServerInfo::ServerInfo(int id, int port, std::string ip) {
+    unique_id = id;
+    port_no = port;
+    peer_ip = std::move(ip);
+}
+
+ServerInfo &ServerInfo::operator=(const ServerInfo &info) {
+    unique_id = info.unique_id;
+    port_no = info.port_no;
+    peer_ip = info.peer_ip;
+
+    return *this;
 }
