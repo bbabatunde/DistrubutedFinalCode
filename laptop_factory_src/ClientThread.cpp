@@ -39,7 +39,7 @@ ThreadBody(std::string ip, int port, int id, int orders, int type) {
 		else if(type == 6) {
             request.SetRequest(customer_id, -1, 2);
             record = stub.ReadRecord(request);
-			std::cout<< "Customer id " << record.GetCustomerId() << "\t"<<record.GetLastOrder()<<std::endl;
+			std::cout<< "Customer id: " << record.GetCustomerId() << "\t"<<"Last order: "<<record.GetLastOrder()<<std::endl;
             if(record.customer_id == -5)
                 return;
         }
