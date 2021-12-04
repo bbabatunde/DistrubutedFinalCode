@@ -22,23 +22,24 @@ private:
     std::map<int, MultiPurposeClientSocket*> ServersStubsMap;
     LoadBalancerRing ring;
     LoadBalancerRing old_ring;
+    int algorithm;
+    std::map<int,int> randServerMap;
+
+    void Migrate();
+    std::vector<int> GetRandAssignedServer(int id);
+    void SendIdentification(int id);
+    ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation, int server);
+    void CustomerThread(LoadBalancerStub &&stub);
+    void SysAdminThread(LoadBalancerStub &&stub);
 
 public:
     LoadBalancerWorker();
+
     void BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket);
-
     void InitRing(const std::vector<ServerInfo>& vector1,  LoadBalancerRing ring);
-
-    void SendIdentification(int id);
-
-    ServerClientInterface SendToServer(CustomerRequest request, ServerClientInterfaceOp operation, int server);
+    void SetAlgorithm(int algo);
 
 
-    void CustomerThread(LoadBalancerStub &&stub);
-
-    void SysAdminThread(LoadBalancerStub &&stub);
-
-    void Migrate();
 };
 
 

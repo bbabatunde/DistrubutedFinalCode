@@ -49,6 +49,6 @@ AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
     if (server_socket->Recv(buffer, request.Size(), 0)) {
         request.Unmarshal(buffer);
     }
-    memset(buffer, 0, sizeof(buffer));
+    memset(buffer, 0, 64);
     return request;
 }

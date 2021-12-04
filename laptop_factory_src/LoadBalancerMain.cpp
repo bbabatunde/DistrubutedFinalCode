@@ -23,16 +23,17 @@ int main(int argc, char *argv[]) {
     int number_of_servers = atoi(argv[2]);
     int cache_size = atoi(argv[3]);
     int number_of_replicas = atoi(argv[4]);
+    int  algorithm = atoi(argv[5]); //1 is consistent , 0 is rand
     if(number_of_servers <= number_of_replicas)
         return 0;
 
     LoadBalancerRing ring = LoadBalancerRing(number_of_servers, number_of_replicas);
 
-    int offset = 5;
+    int offset = 6;
 
     for(int i = 0; i < number_of_servers; i++){
 
-        int peer_unique_id = atoi(argv[offset++]); //@TODO could internal and not from user
+        int peer_unique_id = atoi(argv[offset++]);
         std::string peer_ip = argv[offset++];
         int peer_port = atoi(argv[offset++]);
 
@@ -44,6 +45,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    balancer.SetAlgorithm(algorithm);
     balancer.InitRing(primaryServers, ring);
 
     std::vector<std::thread> thread_vector;

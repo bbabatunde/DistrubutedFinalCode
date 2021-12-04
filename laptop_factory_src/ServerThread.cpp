@@ -91,6 +91,10 @@ void LaptopFactory::PrimaryServerRole(ServerStub stub, int id){
                 record = ReadRecord(request);
                 stub.ReturnRecord(record);
                 break;
+            case 3:
+                record = DeleteRecord(request);
+                stub.ReturnRecord(record);
+                break;
             default:
                 std::cout << "Undefined laptop type: "
                           << request_type << std::endl;
@@ -286,5 +290,14 @@ int LaptopFactory::UpdateBackup(ServerStub *pStub) {
     }
 
     return 1;
+}
+
+CustomerRecord LaptopFactory::DeleteRecord(CustomerRequest request) {
+    if(customer_record.find(request.GetCustomerId()) == customer_record.end()){
+        return  {};
+    }
+    int last_order_no = customer_record[request.GetCustomerId()];
+    customer_record.erase(request.GetCustomerId());
+    return {request.GetCustomerId(), last_order_no};
 }
 

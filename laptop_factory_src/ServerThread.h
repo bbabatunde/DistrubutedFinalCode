@@ -78,6 +78,7 @@ public:
     }
     void SetPeerInfo(std::vector<ServerInfo>& info);
 
+    CustomerRecord DeleteRecord(CustomerRequest request);
 };
 
 #endif // end of #ifndef __SERVERTHREAD_H__

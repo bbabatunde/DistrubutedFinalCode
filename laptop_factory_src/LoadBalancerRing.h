@@ -21,7 +21,6 @@ private:
 
     size_t REPLICAS;
     size_t PARTITION_POWER = 16;
-    size_t PARTITION_SHIFT;
     size_t PARTITION_MAX = pow(PARTITION_POWER - 1,2);
     size_t NODE_COUNT;
     int ZONE_COUNT = 16;
@@ -39,6 +38,8 @@ public:
     int GetDataCount();
 
     size_t GetServersCount();
+
+    void InvalidateNode(int i);
 };
 
 

@@ -128,7 +128,7 @@ public:
 
 class LaptopInfo {
 private:
-	int customer_id;
+	int customer_id = -1;
 	int order_number;
 	int request_type;
 	int engineer_id;
