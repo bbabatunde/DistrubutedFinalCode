@@ -117,7 +117,10 @@ namespace MaxLRUCache{
             std::string toString(){
                 std::string s;
                 for (auto const& i : keys_) {
-                    s += std::to_string(i.key) + " " + std::to_string(i.value) + "\n";
+                    s += std::to_string(i.key) + "\t" + std::to_string(i.value) + "\n";
+                }
+                if (!s.empty() && s[s.length()-1] == '\n') {
+                    s.erase(s.length()-1);
                 }
                 return s;
             }
