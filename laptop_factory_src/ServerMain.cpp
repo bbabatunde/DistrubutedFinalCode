@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     int offset = 4;
     //std::cout<<port<<factory_id<<number_of_peer<<std::endl;
 
-    std::vector<PeerInfo> serverPeer;
+    std::vector<ServerInfo> serverPeer;
     for(int i = 0; i < number_of_peer; i++){
         int peer_unique_id = atoi(argv[offset++]);
         std::string peer_ip = argv[offset++];

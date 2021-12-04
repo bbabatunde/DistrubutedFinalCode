@@ -3,6 +3,8 @@
 
 #include "ServerThread.h"
 #include "ServerStub.h"
+#include "Messages.h"
+
 
 LaptopInfo LaptopFactory::
 CreateLaptop(CustomerRequest order, int engineer_id) {
@@ -67,7 +69,6 @@ void LaptopFactory::PrimaryServerRole(ServerStub stub, int id){
             break;
         }
         request_type = request.GetRequestType();
-        using namespace  std;
         switch (request_type) {
 
             case 1:
@@ -88,6 +89,10 @@ void LaptopFactory::PrimaryServerRole(ServerStub stub, int id){
                 break;
             case 2:
                 record = ReadRecord(request);
+                stub.ReturnRecord(record);
+                break;
+            case 3:
+                record = DeleteRecord(request);
                 stub.ReturnRecord(record);
                 break;
             default:
@@ -189,7 +194,7 @@ bool LaptopFactory::Replicate(MapOp op) {
 
     maplock.lock();
     for(int i= 0; i < zombies_peer_stubs.size(); i++){
-        PeerInfo peer = peer_map[zombies_peer_stubs[i]];
+        ServerInfo peer = peer_map[zombies_peer_stubs[i]];
 
         ServerStub* stub = new ServerStub();
         int response = stub->InitToBackup(peer.peer_ip, peer.port_no);
@@ -249,7 +254,7 @@ bool LaptopFactory::Replicate(MapOp op) {
 void LaptopFactory::ConnectToBackups() {
     std::unique_lock<std::mutex> maplock(map_record_lock, std::defer_lock);
 
-    for(PeerInfo& peer: peer_info){
+    for(ServerInfo& peer: peer_info){
         ServerStub* stub = new ServerStub();
         if(stub->InitToBackup(peer.peer_ip, peer.port_no) == 0){
             stub = nullptr;
@@ -267,7 +272,7 @@ void LaptopFactory::ConnectToBackups() {
 
 }
 
-void LaptopFactory::SetPeerInfo(std::vector<PeerInfo>& info) {
+void LaptopFactory::SetPeerInfo(std::vector<ServerInfo>& info) {
     peer_info = info;
 }
 
@@ -287,9 +292,12 @@ int LaptopFactory::UpdateBackup(ServerStub *pStub) {
     return 1;
 }
 
-
-PeerInfo::PeerInfo(int id, int port, std::string ip) {
-     unique_id = id;
-     port_no = port;
-     peer_ip = ip;
+CustomerRecord LaptopFactory::DeleteRecord(CustomerRequest request) {
+    if(customer_record.find(request.GetCustomerId()) == customer_record.end()){
+        return  {};
+    }
+    int last_order_no = customer_record[request.GetCustomerId()];
+    customer_record.erase(request.GetCustomerId());
+    return {request.GetCustomerId(), last_order_no};
 }
+

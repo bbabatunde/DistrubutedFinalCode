@@ -20,26 +20,7 @@ struct ExpertRequest {
 
 
 
-struct PeerInfo{
 
-
-    int unique_id;
-    int port_no;
-    std::string peer_ip;
-    PeerInfo(){
-        unique_id = -1;
-        port_no = -1;
-        peer_ip = nullptr;
-    };
-    PeerInfo(int id, int port, std::string ip);
-    PeerInfo& operator = (const PeerInfo &info) {
-        unique_id = info.unique_id;
-        port_no = info.port_no;
-        peer_ip = info.peer_ip;
-
-        return *this;
-    }
-};
 
 
 class LaptopFactory {
@@ -54,10 +35,10 @@ private:
 
     std::map<int, int> customer_record;
     std::vector<MapOp> smr_log;
-    std::vector<PeerInfo> peer_info;
+    std::vector<ServerInfo> peer_info;
     std::vector<ServerStub*> peer_stubs;
     std::vector<ServerStub*> zombies_peer_stubs;
-    std::map<ServerStub*, PeerInfo> peer_map;
+    std::map<ServerStub*, ServerInfo> peer_map;
 
     int last_index = -1;
     int committed_index = -1;
@@ -95,8 +76,9 @@ public:
     void SetFactoryId(int id){
         factory_id = id;
     }
-    void SetPeerInfo(std::vector<PeerInfo>& info);
+    void SetPeerInfo(std::vector<ServerInfo>& info);
 
+    CustomerRecord DeleteRecord(CustomerRequest request);
 };
 
 #endif // end of #ifndef __SERVERTHREAD_H__

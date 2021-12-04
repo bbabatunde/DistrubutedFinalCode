@@ -6,30 +6,28 @@
 
 enum ServerClientInterfaceOp{
     INFO = 0,
-    RECORD = 1
+    RECORD = 1,
+    DELETE = 2
 };
+
 struct ServerInfo{
 
 
     int unique_id;
     int port_no;
     std::string peer_ip;
+
     ServerInfo(){
         unique_id = -1;
         port_no = -1;
-        peer_ip = nullptr;
     };
     ServerInfo(int id, int port, std::string ip);
-    ServerInfo& operator = (const ServerInfo &info) {
-        unique_id = info.unique_id;
-        port_no = info.port_no;
-        peer_ip = info.peer_ip;
+    ServerInfo& operator = (const ServerInfo &info);
 
-        return *this;
-    }
 };
 
-class CustomerRequest {
+
+class CustomerRequest{
 private:
 	int customer_id;
 	int order_number;
@@ -37,6 +35,12 @@ private:
 
 public:
 	CustomerRequest();
+    CustomerRequest(int cid, int ordn, int type){
+        customer_id = cid;
+        order_number = ordn;
+        request_type = type;
+    };
+
 	void operator = (const CustomerRequest &order) {
 		customer_id = order.customer_id;
 		order_number = order.order_number;
@@ -45,7 +49,7 @@ public:
 	void SetRequest(int cid, int order_num, int type);
 	int GetCustomerId();
 	int GetOrderNumber();
-	int GetRequestType();
+    int GetRequestType();
 
 	int Size();
 
@@ -57,6 +61,25 @@ public:
 	void Print();
 };
 
+
+
+
+class AdminRequest {
+
+private:
+    int request_type;
+    ServerInfo s_info;
+
+public:
+    AdminRequest();
+
+    int GetRequestType();
+    int Size();
+    void Unmarshal(char* buffer);
+    void Marshal(char* buffer);
+    void SetRequest(int i, const ServerInfo& info);
+    ServerInfo GetServerInfo();
+};
 
 
 class HandShaking{
@@ -105,7 +128,7 @@ public:
 
 class LaptopInfo {
 private:
-	int customer_id;
+	int customer_id = -1;
 	int order_number;
 	int request_type;
 	int engineer_id;
@@ -181,6 +204,5 @@ public:
         last_index = info.last_index;
         op = info.op;
     }
-    bool IsValid();
 };
 #endif // #ifndef __MESSAGES_H__

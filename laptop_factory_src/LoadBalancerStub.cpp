@@ -1,9 +1,8 @@
 //
 // Created by Egbantan Babatunde on 11/14/21.
 //
-
 #include "LoadBalancerStub.h"
-#include <iostream>
+
 void LoadBalancerStub::Init(std::unique_ptr<MultiPurposeServerSocket> socket) {
     this->server_socket = std::move(socket);
 
@@ -30,4 +29,26 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
     }
 
 
+}
+
+HandShaking LoadBalancerStub::RecieveIdentification() {
+    HandShaking id;
+
+    char buffer[id.Size()];
+
+    if (server_socket->Recv(buffer, id.Size(), 0)) {
+        id.Unmarshal(buffer);
+    }
+    return id;
+}
+
+AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
+    AdminRequest request;
+
+    char buffer[64];
+    if (server_socket->Recv(buffer, request.Size(), 0)) {
+        request.Unmarshal(buffer);
+    }
+    memset(buffer, 0, 64);
+    return request;
 }

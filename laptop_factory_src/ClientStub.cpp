@@ -5,10 +5,10 @@ ClientStub::ClientStub() {}
 int ClientStub::Init(std::string ip, int port) {
 	int result = socket.Init(ip, port);
 
-//    if(result){
-//        HandShaking id(0, -1);
-//        SendIdentification(id);
-//    }
+    if(result){
+        HandShaking id(0, -1);
+        SendIdentification(id);
+    }
     return  result;
 }
 

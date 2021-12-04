@@ -7,6 +7,7 @@
 
 
 #include <memory>
+#include <cstring>
 #include "MultiPurposeServerSocket.h"
 #include "MultiPurposeClientSocket.h"
 #include "Messages.h"
@@ -14,13 +15,16 @@
 class LoadBalancerStub {
 private:
     std::unique_ptr<MultiPurposeServerSocket> server_socket;
-    MultiPurposeClientSocket client_socket;
 public:
     void Init(std::unique_ptr<MultiPurposeServerSocket> socket);
 
     CustomerRequest ReceiveCustomerRequest();
 
     int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
+
+    HandShaking RecieveIdentification();
+
+    AdminRequest ReceiveAdminRequest();
 };
 
 
