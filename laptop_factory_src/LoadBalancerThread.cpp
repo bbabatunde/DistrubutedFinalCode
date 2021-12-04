@@ -18,6 +18,8 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
     stub.Init(std::move(socket));
 
     HandShaking role = stub.RecieveIdentification();
+
+
     if(role.message == 0){
         CustomerThread(std::move(stub));
     }else if(role.message == 1){
@@ -29,17 +31,17 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
 
 }
 
-void LoadBalancerWorker::InitRing(std::vector<ServerInfo> vector1, LoadBalancerRing ring1) {
+void LoadBalancerWorker::InitRing(const std::vector<ServerInfo>& vector1, LoadBalancerRing ring1) {
     old_ring = ring;
     ring = std::move(ring1);
+    std::cout<<old_ring.GetDataCount()<<"  "<<ring.GetDataCount()<<std::endl;
 
     for(auto v: vector1){
         ServersStubsMap[v.unique_id] = std::move(new MultiPurposeClientSocket);
         ServersStubsMap[v.unique_id]->Init( v.peer_ip,v.port_no);
         SendIdentification(v.unique_id);
     }
-
-    Migrate(old_ring, ring);
+    Migrate();
 }
 
 void LoadBalancerWorker::SendIdentification(int sid) {
@@ -139,66 +141,81 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 void LoadBalancerWorker::SysAdminThread(LoadBalancerStub &&stub) {
     int request_type;
     std::vector<ServerInfo> servers;
-    size_t servers_count;
+    size_t count;
+    AdminRequest request;
 
     while (true) {
-        AdminRequest request = stub.ReceiveAdminRequest();
+
+         request = stub.ReceiveAdminRequest();
+        if (request.GetRequestType()== -1) {
+            break;
+        }
+
 
         request_type = request.GetRequestType();
-
-
         switch (request_type) {
 
             case 1:
                 servers.push_back(request.GetServerInfo());
                 break;
-            default:
-                servers_count = servers.size();
+            case 2:
+                 count = servers.size() + ring.GetServersCount();
 
-                LoadBalancerRing new_ring = LoadBalancerRing(ring.GetServersCount() + servers_count, ring.GetNumberofReplicas());
-
-
+                LoadBalancerRing new_ring( count, ring.GetNumberofReplicas());
+                std::cout<<ring.GetServersCount()<< " "<<new_ring.GetServersCount()<<std::endl;
                 InitRing(servers, new_ring);
-                return;
+                break;
 
 
         }
     }
 }
 
-void LoadBalancerWorker::Migrate(LoadBalancerRing old_ring, LoadBalancerRing new_ring) {
+void LoadBalancerWorker::Migrate() {
 
-    for(int i = 0; i < old_ring.GetDataCount(); i++){
+    for(int i = 0; i <= old_ring.GetDataCount(); i++){
 
         std::vector<int> old_nodes = old_ring.GetNodes(i);
-        std::vector<int> new_nodes = new_ring.GetNodes(i);
+        std::vector<int> new_nodes = ring.GetNodes(i);
 
         std::vector<int> diff;
         CustomerRequest request;
-        CustomerRecord c_record;
+
+        std::set<int> old_nodes_set(old_nodes.begin(), old_nodes.end());
+        std::set<int> new_nodes_set(new_nodes.begin(), new_nodes.end());
+        std::set<int> set_diff;
+
+        std::set_difference(old_nodes_set.begin(), old_nodes_set.end(), new_nodes_set.begin(), new_nodes_set.end(),
+                            std::inserter(set_diff, set_diff.end()));
+
+        std::set<int> create_laptop_set;
+        std::set_difference(old_nodes_set.begin(), old_nodes_set.end(), set_diff.begin(), set_diff.end(),
+                            std::inserter(create_laptop_set, create_laptop_set.end()));
+
+        for(auto v: old_nodes_set)
+            std::cout<<"old " <<v<<std::endl;
+
+        for(auto v: new_nodes_set)
+            std::cout<<"new "<<v<<std::endl;
 
 
-        for(auto v: old_nodes){
-            std::cout<<v<<std::endl;
-            if(std::find(new_nodes.begin(), new_nodes.end(), v) == new_nodes.end()){
-                diff.push_back(v);
-            }
+        for(auto v: create_laptop_set)
+            std::cout<<"create "<<v<<std::endl;
+        //get a record from first node
+        request.SetRequest(i,-1, 2);
+        ServerClientInterface record = SendToServer(request, RECORD, old_nodes[0]);
+
+        //create laptop in new nodes
+        for(int node: create_laptop_set){
+            request.SetRequest(i,record.record.last_order, 1);
+            std::cout<<"node" << node<< " "<<SendToServer(request, INFO, node).info.GetCustomerId()<<std::endl;
         }
 
+        std::set<int> delete_laptop_set;
+        std::set_difference(new_nodes_set.begin(), new_nodes_set.end(), set_diff.begin(), set_diff.end(),
+                            std::inserter(delete_laptop_set, delete_laptop_set.end()));
+        //DELETE from old nodes
 
-        for(int node: diff){
-            request.SetRequest(i,-1, 1);
-            ServerClientInterface record = SendToServer(request, RECORD, node);
-            c_record = record.record;
-
-            request.SetRequest(i,-1, 3);
-            //SendToServer(request, DELETE, node);
-        }
-
-        for(int node: new_nodes){
-            request.SetRequest(i, c_record.last_order, 2);
-            SendToServer(request, INFO, node);
-        }
     }
 }
 

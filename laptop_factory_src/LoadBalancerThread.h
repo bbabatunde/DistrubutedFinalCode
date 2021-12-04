@@ -27,7 +27,7 @@ public:
     LoadBalancerWorker();
     void BalancerThread(std::unique_ptr<MultiPurposeServerSocket> socket);
 
-    void InitRing(std::vector<ServerInfo> vector1,  LoadBalancerRing ring);
+    void InitRing(const std::vector<ServerInfo>& vector1,  LoadBalancerRing ring);
 
     void SendIdentification(int id);
 
@@ -38,7 +38,7 @@ public:
 
     void SysAdminThread(LoadBalancerStub &&stub);
 
-    void Migrate(LoadBalancerRing ring, LoadBalancerRing ring1);
+    void Migrate();
 };
 
 

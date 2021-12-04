@@ -32,8 +32,10 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
 }
 
 HandShaking LoadBalancerStub::RecieveIdentification() {
-    char buffer[24];
     HandShaking id;
+
+    char buffer[id.Size()];
+
     if (server_socket->Recv(buffer, id.Size(), 0)) {
         id.Unmarshal(buffer);
     }
@@ -41,10 +43,12 @@ HandShaking LoadBalancerStub::RecieveIdentification() {
 }
 
 AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
-    char buffer[32];
     AdminRequest request;
+
+    char buffer[64];
     if (server_socket->Recv(buffer, request.Size(), 0)) {
         request.Unmarshal(buffer);
     }
+    memset(buffer, 0, sizeof(buffer));
     return request;
 }

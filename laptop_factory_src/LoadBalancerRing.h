@@ -19,20 +19,19 @@ private:
     std::map<int, std::pair<int, int>> server_nodes;
     std::vector< std::size_t> partition2node;
 
-    std::size_t partition_shift;
     size_t REPLICAS;
     size_t PARTITION_POWER = 16;
     size_t PARTITION_SHIFT;
     size_t PARTITION_MAX = pow(PARTITION_POWER - 1,2);
-    int NODE_COUNT;
+    size_t NODE_COUNT;
     int ZONE_COUNT = 16;
-    int data_count = 0;
+    int data_count = -1;
     void createNodes();
 
 
 public:
     LoadBalancerRing(){};
-    LoadBalancerRing(int node_count, int number_of_replicas);
+    LoadBalancerRing(size_t node_count, int number_of_replicas);
     std::vector<int> GetNodes(int customer_id);
 
     int GetNumberofReplicas();

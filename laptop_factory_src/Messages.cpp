@@ -333,19 +333,21 @@ void AdminRequest::Unmarshal(char *buffer) {
 
     int net_request_type;
     int net_server_info_port;
-    std::string net_server_info_address;
     int net_server_info_id;
+    std::string net_server_info_address;
 
     int offset = 0;
 
-
     memcpy(&net_request_type, buffer + offset, sizeof(net_request_type));
     offset += sizeof(net_request_type);
+
+    memcpy(&net_server_info_id, buffer + offset, sizeof(net_server_info_id));
+    offset += sizeof(net_server_info_id);
+
     memcpy(&net_server_info_port, buffer + offset, sizeof(net_server_info_port));
     offset += sizeof(net_server_info_port);
-    //memcpy(&net_server_info_address, buffer + offset, net_server_info_address.size());
-    //offset += net_server_info_address.size();
-    //memcpy(&net_server_info_id, buffer + offset, sizeof(net_server_info_id));
+
+    memcpy(&net_server_info_address, buffer + offset, 32);
 
 
     request_type = ntohl(net_request_type);
@@ -356,7 +358,6 @@ void AdminRequest::Unmarshal(char *buffer) {
 }
 
 void AdminRequest::Marshal(char *buffer) {
-    return;
     int net_request_type = htonl(request_type);
     int net_server_info_port = htonl(s_info.port_no);
     std::string net_server_info_address = s_info.peer_ip;
@@ -368,12 +369,14 @@ void AdminRequest::Marshal(char *buffer) {
 
     memcpy(buffer + offset, &net_request_type, sizeof(net_request_type));
     offset += sizeof(net_request_type);
+
+    memcpy(buffer + offset, &net_server_info_id, sizeof(net_server_info_id));
+    offset += sizeof(net_server_info_id);
+
     memcpy(buffer + offset, &net_server_info_port, sizeof(net_server_info_port));
     offset += sizeof(net_server_info_port);
-    //memcpy(buffer + offset, &net_server_info_address, net_server_info_address.size());
-    //offset += net_server_info_address.size();
-    memcpy(buffer + offset, &net_server_info_id, sizeof(net_server_info_id));
 
+    memcpy(buffer + offset, &net_server_info_address, 32);
 }
 
 void AdminRequest::SetRequest(int i, const ServerInfo& in_info) {

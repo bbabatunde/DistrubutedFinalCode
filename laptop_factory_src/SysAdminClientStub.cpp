@@ -14,7 +14,7 @@ bool SysAdminClientStub::Init(std::string ip, int port) {
 }
 
 bool SysAdminClientStub::Send(AdminRequest info) {
-    char buffer[32];
+    char buffer[64];
     int size;
     info.Marshal(buffer);
     size = info.Size();
@@ -27,8 +27,8 @@ bool SysAdminClientStub::Send(AdminRequest info) {
 
 bool SysAdminClientStub::CloseStream() {
     AdminRequest request;
-    request.SetRequest(2,ServerInfo{});
-    char buffer[32];
+    request.SetRequest(2,ServerInfo());
+    char buffer[64];
     int size;
 
     request.Marshal(buffer);

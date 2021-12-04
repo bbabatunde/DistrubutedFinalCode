@@ -9,6 +9,7 @@ std::vector<int> LoadBalancerRing::GetNodes(int customer_id) {
 
     data_count = std::max(customer_id, data_count);
 
+
     std::string customer_id_str = std::to_string(customer_id);
     std::size_t partition =  (   (std::size_t)(std::hash<std::string>{}(customer_id_str)) % PARTITION_MAX) ;
 
@@ -43,7 +44,7 @@ void LoadBalancerRing::createNodes() {
     while(server_nodes.size() < NODE_COUNT){
         int zone = 0;
         while(zone < ZONE_COUNT && server_nodes.size() < NODE_COUNT){
-            int node_id = server_nodes.size();
+            size_t node_id = server_nodes.size();
             server_nodes[node_id] = {node_id, zone};
             zone++;
         }
@@ -52,14 +53,15 @@ void LoadBalancerRing::createNodes() {
 }
 
 
-LoadBalancerRing::LoadBalancerRing(int node_count, int number_of_replicas) {
+LoadBalancerRing::LoadBalancerRing(size_t node_count, int number_of_replicas) {
+
     NODE_COUNT = node_count;
 
     createNodes();
 
     //build ring
     std::vector<std::size_t> part2node;
-    for(size_t partition = 0; partition < pow(PARTITION_POWER, 2); partition++){
+    for(size_t partition = 0; partition < (size_t)pow(PARTITION_POWER, 2); partition++){
         part2node.push_back(partition % server_nodes.size());
     }
 
@@ -75,7 +77,6 @@ LoadBalancerRing::LoadBalancerRing(int node_count, int number_of_replicas) {
 
         partitions_size++;
     }
-    PARTITION_SHIFT = 32 - partitions_size;
 
 }
 

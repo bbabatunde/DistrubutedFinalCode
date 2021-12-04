@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
 
         request.SetRequest(1, v);
         stub.Send(request);
-        std::cout<<stub.Send(request)<<std::endl;
 
     }
 
