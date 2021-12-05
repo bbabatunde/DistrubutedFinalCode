@@ -32,6 +32,9 @@ private:
     void CustomerThread(LoadBalancerStub &&stub);
     void SysAdminThread(LoadBalancerStub &&stub);
 
+    //@TODO create a wrapper class for map that use FIFO(easiest)/LIFO/LRU(most complicated) to control
+    //size
+    std::map<int, int> cache;
 public:
     LoadBalancerWorker();
 

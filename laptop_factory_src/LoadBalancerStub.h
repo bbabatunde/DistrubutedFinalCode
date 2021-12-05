@@ -7,7 +7,11 @@
 
 
 #include <memory>
+
 #include <cstring>
+
+#include <map>
+
 #include "MultiPurposeServerSocket.h"
 #include "MultiPurposeClientSocket.h"
 #include "Messages.h"
@@ -22,9 +26,13 @@ public:
 
     int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
 
+
     HandShaking RecieveIdentification();
 
     AdminRequest ReceiveAdminRequest();
+
+    void ShipCacheToClient(std::__1::map<int, int> map1);
+
 };
 
 

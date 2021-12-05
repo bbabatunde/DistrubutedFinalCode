@@ -31,6 +31,7 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
 
 }
 
+
 HandShaking LoadBalancerStub::RecieveIdentification() {
     HandShaking id;
 
@@ -51,4 +52,9 @@ AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
     }
     memset(buffer, 0, 64);
     return request;
+
+void LoadBalancerStub::ShipCacheToClient(std::__1::map<int, int> map1) {
+    char buffer[map1.size()];
+
+
 }
