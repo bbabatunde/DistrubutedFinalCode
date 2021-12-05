@@ -126,7 +126,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
                 else
                     nodes = GetRandAssignedServer(customer_id);
 
-
                 for(auto node: nodes){
                     ServerClientInterface temp_info = SendToServer(request, INFO, node);
                     if(temp_info.info.GetCustomerId() == -1){
@@ -159,7 +158,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 
                 if(!nodes.empty()){
                     random = rand() % (nodes.size());
-
                     hashed_server = nodes[random];
                     // first check cache and we have a hit nice then return it
                     if(cache.hasKey(customer_id)) {
