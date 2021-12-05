@@ -52,3 +52,13 @@ AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
     memset(buffer, 0, 64);
     return request;
 }
+
+
+
+
+
+int LoadBalancerStub::ShipCacheToClient(std::string data) {
+
+    return server_socket->SendString(data);
+
+}

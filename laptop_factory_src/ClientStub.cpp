@@ -53,3 +53,16 @@ void ClientStub::SendIdentification(HandShaking id) {
 
 }
 
+std::string ClientStub::ReceiveCache(CustomerRequest request, int size) {
+
+    char buffer1[32];
+    int size1;
+    request.Marshal(buffer1);
+    size1 = request.Size();
+    std::string received;
+
+    if (socket.Send(buffer1, size1, 0)) {
+        received = socket.ReceiveString();
+    }
+    return received;
+}

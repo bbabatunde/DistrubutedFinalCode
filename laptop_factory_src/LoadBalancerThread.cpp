@@ -2,7 +2,12 @@
 // Created by Egbantan Babatunde on 11/14/21.
 //
 
+
 #include "LoadBalancerThread.h"
+
+
+#include <iostream>
+
 
 #include <utility>
 
@@ -97,13 +102,19 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
         LaptopInfo info;
         CustomerRecord record;
         ServerClientInterface inter;
+
         int hashed_server = 0;
         int customer_id = 0;
         int random = 0;
         std::vector<int> nodes;
 
-        switch (request_type) {
 
+        CustomerRecord cacheToSend;
+
+
+        std::string cache_string;
+
+        switch (request_type) {
             case 1:
                 customer_id = request.GetCustomerId();
                 //@TODO read map of servers to customer id from client(4) to check that algorithm works
@@ -124,11 +135,17 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 
                 inter.info = info;
                 stub.Ship(inter, INFO);
+                
+                // std::cout << "size of cache is: " << cache.getMaxSize() << std::endl;
+                // invalidating after successful write
+                cache.removeRecord(customer_id); // removeRecord is returning bool
                 break;
 
+            
             case 2:
 
                 customer_id = request.GetCustomerId();
+
                 if(algorithm)
                     nodes =  ring.GetNodes(customer_id);
                 else
@@ -139,12 +156,56 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
                 hashed_server = nodes[random];
                 record = SendToServer(request, RECORD, hashed_server);
 
+
+
+                // first check cache and we have a hit nice then return it
+                if(cache.hasKey(customer_id)) {
+                    record = CustomerRecord(customer_id, cache.getRecord(customer_id));
+                } else {
+                    record = SendToServer(request, RECORD, hashed_server);
+                }
+
+
+
+
+
+                
+
                 inter.record = record;
                 stub.Ship(inter, RECORD);
+                // add it to the cache
+                // add only valid orders since we add it to cache after first read some -1 were in the list and I tried to prevent it with an if
+                if(record.last_order != -1){
+                    cache.addRecord(customer_id, record.last_order);
+                }
                 break;
+
+
+
+
+
+
+
+
+
+            case 5:
+                cache_string = ""; 
+                cache_string = cache.toString();
+                if (!cache.empty()){
+                    stub.ShipCacheToClient(cache_string);
+                } 
+                else {
+                    stub.ShipCacheToClient("Cache is empty");
+                } 
+                
+                break;
+
             default:
                 std::cout << "Undefined request_type type: "
                           << request_type << std::endl;
+
+
+
 
 
         }
@@ -241,4 +302,10 @@ std::vector<int> LoadBalancerWorker::GetRandAssignedServer(int id) {
     return std::vector<int>{randServerMap[id]};
 }
 
+
+
+
+void LoadBalancerWorker::SetCacheSize(int size) {
+    cache.setCacheSize(size);
+}
 
