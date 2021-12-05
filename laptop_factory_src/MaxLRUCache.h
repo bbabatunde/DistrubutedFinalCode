@@ -68,9 +68,11 @@ namespace MaxLRUCache{
                     keys_.splice(keys_.begin(), keys_, iter->second);
                     return;
                 }
+                if (maxSize_ > 0) {
                 keys_.emplace_front(k, std::move(v));
                 cache_[k] = keys_.begin();
                 trim();
+                }
             }
             const int& getRecord(const int& k) {
                 Guard g(lock_);
