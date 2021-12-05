@@ -30,7 +30,7 @@ void LoadBalancerWorker::BalancerThread(std::unique_ptr<MultiPurposeServerSocket
     }else if(role.message == 1){
         SysAdminThread(std::move(stub));
     }else{
-        std::cout<<"Error: invalid role"<<std::endl;
+        std::cout<<"Error: invalid role "<<role.message<<std::endl;
 
     }
 
@@ -65,25 +65,29 @@ LoadBalancerWorker::SendToServer(CustomerRequest request, ServerClientInterfaceO
     int size;
     request.Marshal(buffer);
     size = request.Size();
-    if (ServersStubsMap[server]->Send(buffer, size, 0)) {
+    if (ServersStubsMap[server]->Send(buffer, size, 0) == 1) {
         if(operation == INFO){
             LaptopInfo info;
             size = info.Size();
-            if (ServersStubsMap[server]->Recv(buffer, size, 0)) {
+            if (ServersStubsMap[server]->Recv(buffer, size, 0) == 1) {
                 info.Unmarshal(buffer);
                 result.info = info;
 
-            }
+            }else
+              return {};
         }else {
             CustomerRecord record;
             size = record.Size();
-            if (ServersStubsMap[server]->Recv(buffer, size, 0)) {
+            if (ServersStubsMap[server]->Recv(buffer, size, 0) == 1) {
                 record.Unmarshal(buffer);
                 result.record = record;
 
-            }
+            }else
+              return {};
         }
 
+    }else{
+        return {};
     }
 
     return result;
@@ -117,7 +121,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
         switch (request_type) {
             case 1:
                 customer_id = request.GetCustomerId();
-                //@TODO read map of servers to customer id from client(4) to check that algorithm works
                 if(algorithm)
                     nodes =  ring.GetNodes(customer_id);
                 else
@@ -146,30 +149,25 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 
                 customer_id = request.GetCustomerId();
 
-                if(algorithm)
+                if(algorithm){
                     nodes =  ring.GetNodes(customer_id);
+                }
                 else
                     nodes = GetRandAssignedServer(customer_id);
 
-                random = rand() % (nodes.size());
-
-                hashed_server = nodes[random];
-                record = SendToServer(request, RECORD, hashed_server);
 
 
+                if(!nodes.empty()){
+                    random = rand() % (nodes.size());
 
-                // first check cache and we have a hit nice then return it
-                if(cache.hasKey(customer_id)) {
-                    record = CustomerRecord(customer_id, cache.getRecord(customer_id));
-                } else {
-                    record = SendToServer(request, RECORD, hashed_server);
+                    hashed_server = nodes[random];
+                    // first check cache and we have a hit nice then return it
+                    if(cache.hasKey(customer_id)) {
+                        record = CustomerRecord(customer_id, cache.getRecord(customer_id));
+                    } else {
+                        record = SendToServer(request, RECORD, hashed_server);
+                    }
                 }
-
-
-
-
-
-                
 
                 inter.record = record;
                 stub.Ship(inter, RECORD);
@@ -179,15 +177,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
                     cache.addRecord(customer_id, record.last_order);
                 }
                 break;
-
-
-
-
-
-
-
-
-
             case 5:
                 cache_string = ""; 
                 cache_string = cache.toString();

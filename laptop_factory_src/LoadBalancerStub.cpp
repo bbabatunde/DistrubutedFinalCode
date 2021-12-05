@@ -39,6 +39,8 @@ HandShaking LoadBalancerStub::RecieveIdentification() {
     if (server_socket->Recv(buffer, id.Size(), 0)) {
         id.Unmarshal(buffer);
     }
+
+    memset(buffer, 0, id.Size());
     return id;
 }
 

@@ -345,7 +345,7 @@ void AdminRequest::Unmarshal(char *buffer) {
     int net_request_type;
     int net_server_info_port;
     int net_server_info_id;
-    int net_string_size;
+    struct in_addr net_server_info_server_ip;
 
     int offset = 0;
 
@@ -358,18 +358,13 @@ void AdminRequest::Unmarshal(char *buffer) {
     memcpy(&net_server_info_port, buffer + offset, sizeof(net_server_info_port));
     offset += sizeof(net_server_info_port);
 
-    memcpy(&net_string_size, buffer + offset, sizeof(net_string_size));
-    offset += sizeof(net_string_size);
 
-    net_string_size = ntohl(net_string_size) +2;
-    std::string net_server_info_address(buffer + offset, net_string_size);
-
-
-
+    memcpy(&net_server_info_server_ip, buffer + offset, sizeof(net_server_info_server_ip));
+    offset += sizeof(net_server_info_server_ip);
 
     request_type = ntohl(net_request_type);
     s_info.port_no = ntohl(net_server_info_port);
-    s_info.peer_ip = net_server_info_address;
+    s_info.peer_ip = inet_ntoa(net_server_info_server_ip);
     s_info.unique_id = ntohl(net_server_info_id);
     memset(buffer, 0, 64);
 
@@ -380,10 +375,11 @@ void AdminRequest::Marshal(char *buffer) {
     int net_server_info_port = htonl(s_info.port_no);
     int net_server_info_id = htonl(s_info.unique_id);
     std::string net_server_info_address = s_info.peer_ip;
-    int net_string_size = htonl(sizeof(net_server_info_address.c_str()+1));
+    int net_server_info_server_ip = htonl(inet_network(s_info.peer_ip.c_str()));
 
 
     int offset = 0;
+    memset(buffer, 0, 64);
 
     memcpy(buffer + offset, &net_request_type, sizeof(net_request_type));
     offset += sizeof(net_request_type);
@@ -394,12 +390,7 @@ void AdminRequest::Marshal(char *buffer) {
     memcpy(buffer + offset, &net_server_info_port, sizeof(net_server_info_port));
     offset += sizeof(net_server_info_port);
 
-
-    memcpy(buffer + offset, &net_string_size, sizeof(net_string_size));
-    offset += sizeof(net_string_size);
-
-    size_t len = net_server_info_address.copy(buffer+offset, net_server_info_address.size()+1) +2 ;
-    buffer[len] = '\0';
+   memcpy(buffer + offset, &net_server_info_server_ip, sizeof(net_server_info_server_ip));
 
 }
 
