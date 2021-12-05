@@ -65,25 +65,30 @@ LoadBalancerWorker::SendToServer(CustomerRequest request, ServerClientInterfaceO
     int size;
     request.Marshal(buffer);
     size = request.Size();
-    if (ServersStubsMap[server]->Send(buffer, size, 0)) {
+    std::cout<<ServersStubsMap[server]<<std::endl;
+    if (ServersStubsMap[server]->Send(buffer, size, 0) == 1) {
         if(operation == INFO){
             LaptopInfo info;
             size = info.Size();
-            if (ServersStubsMap[server]->Recv(buffer, size, 0)) {
+            if (ServersStubsMap[server]->Recv(buffer, size, 0) == 1) {
                 info.Unmarshal(buffer);
                 result.info = info;
 
-            }
+            }else
+              return {};
         }else {
             CustomerRecord record;
             size = record.Size();
-            if (ServersStubsMap[server]->Recv(buffer, size, 0)) {
+            if (ServersStubsMap[server]->Recv(buffer, size, 0) == 1) {
                 record.Unmarshal(buffer);
                 result.record = record;
 
-            }
+            }else
+              return {};
         }
 
+    }else{
+        return {};
     }
 
     return result;
@@ -117,7 +122,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
         switch (request_type) {
             case 1:
                 customer_id = request.GetCustomerId();
-                //@TODO read map of servers to customer id from client(4) to check that algorithm works
                 if(algorithm)
                     nodes =  ring.GetNodes(customer_id);
                 else
@@ -179,15 +183,6 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
                     cache.addRecord(customer_id, record.last_order);
                 }
                 break;
-
-
-
-
-
-
-
-
-
             case 5:
                 cache_string = ""; 
                 cache_string = cache.toString();
