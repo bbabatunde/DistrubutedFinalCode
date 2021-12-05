@@ -19,31 +19,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37b94530-447d-4f03-bcef-eecb9638bace" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ClientMain.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ClientStub.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ClientThread.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ClientTimer.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerMain.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerRing.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerStub.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerThread.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/Messages.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/MultiPurposeClientSocket.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/MultiPurposeServerSocket.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ServerMain.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ServerStub.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/ServerThread.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/Socket.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/SysAdminClientMain.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/SysAdminClientStub.o" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/client" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/loadbalancer" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/server" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/laptop_factory_src/sysclient" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerRing.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerRing.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerRing.h" beforeDir="false" afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerRing.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerStub.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerStub.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerThread.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/laptop_factory_src/LoadBalancerThread.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
