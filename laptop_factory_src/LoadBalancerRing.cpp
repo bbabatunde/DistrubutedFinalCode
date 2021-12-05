@@ -32,7 +32,6 @@ std::vector<int> LoadBalancerRing::GetNodes(int customer_id) {
     }
     std::vector<int> result;
     for(auto v: node_ids){
-        if(server_nodes[v].second != -1)
         result.push_back(server_nodes[v].first);
     }
     return result;
@@ -93,6 +92,7 @@ size_t LoadBalancerRing::GetServersCount() {
     return server_nodes.size();
 }
 
+
 void LoadBalancerRing::InvalidateNode(int i) {
-    server_nodes[i].second = -1;
+    server_nodes.erase(i);
 }

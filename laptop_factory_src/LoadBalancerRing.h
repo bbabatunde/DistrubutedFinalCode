@@ -26,6 +26,7 @@ private:
     int ZONE_COUNT = 16;
     int data_count = -1;
     void createNodes();
+    int dead_servers;
 
 
 public:
@@ -40,6 +41,8 @@ public:
     size_t GetServersCount();
 
     void InvalidateNode(int i);
+
+    size_t GetAllServersCount();
 };
 
 
