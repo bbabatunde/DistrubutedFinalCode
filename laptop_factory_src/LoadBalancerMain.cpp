@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     int offset = 6;
 
     balancer.SetCacheSize(cache_size);
-    int offset = 4;
+
 
 
     for(int i = 0; i < number_of_servers; i++){

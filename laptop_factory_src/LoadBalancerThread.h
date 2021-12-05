@@ -51,12 +51,12 @@ public:
     void SetAlgorithm(int algo);
 
 
-<<<<<<< HEAD
-=======
-    int ConsistentHashingAlgorithm(int id);
+
+
+
 
     void SetCacheSize(int size);
->>>>>>> cache finalized
+
 };
 
 

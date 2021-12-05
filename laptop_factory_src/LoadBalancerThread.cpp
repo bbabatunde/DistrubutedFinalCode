@@ -110,8 +110,8 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 
 
         CustomerRecord cacheToSend;
-        int hashed_server;
-        int customer_id = 0;
+
+
         std::string cache_string;
 
         switch (request_type) {
@@ -183,9 +183,9 @@ void LoadBalancerWorker::CustomerThread(LoadBalancerStub &&stub) {
 
 
 
-            //@TODO read all cache content baba from client(5)
-            case 5:
-                stub.ShipCacheToClient(cache);
+
+
+
 
 
             case 5:

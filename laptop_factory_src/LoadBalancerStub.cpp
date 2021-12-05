@@ -28,9 +28,8 @@ int LoadBalancerStub::Ship(ServerClientInterface info,ServerClientInterfaceOp op
         return server_socket->Send(buffer, info.record.Size(), 0);
     }
 
+
 }
-
-
 
 HandShaking LoadBalancerStub::RecieveIdentification() {
     HandShaking id;
@@ -52,7 +51,7 @@ AdminRequest LoadBalancerStub::ReceiveAdminRequest() {
     }
     memset(buffer, 0, 64);
     return request;
-
+}
 
 
 
