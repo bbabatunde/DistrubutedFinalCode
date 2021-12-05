@@ -2,19 +2,27 @@
 // Created by Egbantan Babatunde on 11/14/21.
 //
 
+
 #ifndef DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H
 #define DISTRUBUTEDFINALCODE_LOADBALANCERSTUB_H
 
 
 #include <memory>
 
-#include <cstring>
+
 
 #include <map>
+
+
+
+#include <string>
+#include <cstring>
 
 #include "MultiPurposeServerSocket.h"
 #include "MultiPurposeClientSocket.h"
 #include "Messages.h"
+#include "MaxLRUCache.h"
+
 
 class LoadBalancerStub {
 private:
@@ -27,11 +35,15 @@ public:
     int Ship(ServerClientInterface info, ServerClientInterfaceOp operation);
 
 
+
     HandShaking RecieveIdentification();
 
     AdminRequest ReceiveAdminRequest();
 
-    void ShipCacheToClient(std::__1::map<int, int> map1);
+
+
+
+    int ShipCacheToClient(std::string cacheToSend);
 
 };
 

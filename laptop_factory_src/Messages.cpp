@@ -173,6 +173,17 @@ int CustomerRecord::Size() {
     return sizeof(customer_id) + sizeof(last_order);
 }
 
+void CustomerRecord::SetRecord(int id, int order) {
+	customer_id = id;
+	last_order = order;
+}
+int CustomerRecord::GetLastOrder() {
+	return last_order;
+}
+int CustomerRecord::GetCustomerId(){
+	return customer_id;
+}
+
 void CustomerRecord::Marshal(char *buffer) {
     int net_customer_id = htonl(customer_id);
     int net_last_order = htonl(last_order);

@@ -7,14 +7,22 @@
 
 
 
+
 #include "LoadBalancerRing.h"
 #include "LoadBalancerStub.h"
+
+#include "LoadBalancerStub.h"
+#include "MultiPurposeServerSocket.h"
+#include "Messages.h"
+#include "MultiPurposeClientSocket.h"
+
 #include <map>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <set>
 #include <iterator>
+
 
 class LoadBalancerWorker {
 private:
@@ -34,7 +42,7 @@ private:
 
     //@TODO create a wrapper class for map that use FIFO(easiest)/LIFO/LRU(most complicated) to control
     //size
-    std::map<int, int> cache;
+    MaxLRUCache::Cache cache;
 public:
     LoadBalancerWorker();
 
@@ -43,6 +51,12 @@ public:
     void SetAlgorithm(int algo);
 
 
+<<<<<<< HEAD
+=======
+    int ConsistentHashingAlgorithm(int id);
+
+    void SetCacheSize(int size);
+>>>>>>> cache finalized
 };
 
 

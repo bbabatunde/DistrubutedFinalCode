@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
 
 
 
+
     int port = atoi(argv[1]);;
     int number_of_servers = atoi(argv[2]);
     int cache_size = atoi(argv[3]);
@@ -30,6 +31,10 @@ int main(int argc, char *argv[]) {
     LoadBalancerRing ring = LoadBalancerRing(number_of_servers, number_of_replicas);
 
     int offset = 6;
+
+    balancer.SetCacheSize(cache_size);
+    int offset = 4;
+
 
     for(int i = 0; i < number_of_servers; i++){
 

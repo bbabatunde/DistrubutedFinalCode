@@ -23,6 +23,8 @@ public:
 
 	int Send(char *buffer, int size, int flags = 0);
 	int Recv(char *buffer, int size, int flags = 0);
+	int SendString(std::string data, int flags=0);
+	std::string ReceiveString(int size=4096);
 
 	int NagleOn(bool on_off);
 	bool IsNagleOn();

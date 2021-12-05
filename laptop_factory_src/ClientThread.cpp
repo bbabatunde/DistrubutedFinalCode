@@ -36,6 +36,15 @@ ThreadBody(std::string ip, int port, int id, int orders, int type) {
         if(type == 3 && record.customer_id != -1) {
             std::cout << record.customer_id <<"\t"<<record.last_order<<std::endl;
         }
+		if(type == 5) {
+			
+			request.SetRequest(-2,-1,5);
+			std::string cache_string;
+			cache_string = stub.ReceiveCache(request);
+			std::cout << cache_string << std::endl;
+			timer.EndAndMerge();
+			break;
+		}
 		timer.EndAndMerge();
 
 		if (type == 1 && !laptop.IsValid()) {

@@ -2,6 +2,8 @@
 #define __CLIENT_STUB_H__
 
 #include <string>
+#include <cstring>
+#include <iostream>
 
 #include "MultiPurposeClientSocket.h"
 #include "Messages.h"
@@ -16,7 +18,7 @@ public:
     CustomerRecord ReadRecord(CustomerRequest request);
 
     void SendIdentification(HandShaking id);
-
+	std::string ReceiveCache(CustomerRequest request, int size = 8192);
 };
 
 
